@@ -15,4 +15,4 @@ data:
     #do
     #/jmeter/apache-jmeter-4.0/bin/jmeter -n -t $1 -Dserver.rmi.ssl.disable=true -R `getent ahostsv4 $i | cut -d' ' -f1 | sort -u | awk -v ORS=, '{print $1}' | sed 's/,$//'`
     #done
-    /jmeter/apache-jmeter-4.0/bin/jmeter -n -t $1 -Dserver.rmi.ssl.disable=true -R "$2,$3,$4,$5" &
+    /jmeter/apache-jmeter-4.0/bin/jmeter -n -t $1 -Dserver.rmi.ssl.disable=true -R "$2,$3,$4,$5,$6" &

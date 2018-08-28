@@ -14,6 +14,8 @@ do
         gcloud container clusters get-credentials $clusterName --zone $zoneName --project etsyperftesting-208619
         kubectl delete ns $tenant
 done
-        clusterName=trial-master
-        zoneName=us-central1-a
-        gcloud container clusters get-credentials $clusterName --zone $zoneName --project etsyperftesting-208619
+ 
+clusterName=`gcloud container clusters list | grep master | awk '{ print $1 }'`
+zoneName=`gcloud container clusters list | grep master | awk '{ print $2 }'`
+gcloud container clusters get-credentials $clusterName --zone $zoneName --project etsyperftesting-208619
+kubectl get po -n $tenant -o wide |  grep "jmeter-master" | awk '{ print $1 }'>$clusterName.csv

@@ -10,6 +10,11 @@ rm -rf trial-*.csv
 
 status=true
 
+echo " Available cluster under this Project "
+
+echo 
+gcloud container clusters list
+
 while $status; do
 
 read -p "Enter the ClusterName : " clusterName
@@ -46,8 +51,10 @@ do
 	kubectl get po -n $tenant -o wide
         kubectl get po -n $tenant -o wide |  grep "slaves" | awk '{ print $1":"$6 }'> $clusterName.csv
 done
-        clusterName=trial-master
-        zoneName=us-central1-a
-        gcloud container clusters get-credentials $clusterName --zone $zoneName --project etsyperftesting-208619
-	kubectl get po -n $tenant -o wide |  grep "jmeter-master" | awk '{ print $1 }'>$clusterName.csv
+
+clusterName=`gcloud container clusters list | grep master | awk '{ print $1 }'`
+zoneName=`gcloud container clusters list | grep master | awk '{ print $2 }'`
+gcloud container clusters get-credentials $clusterName --zone $zoneName --project etsyperftesting-208619
+kubectl get po -n $tenant -o wide |  grep "jmeter-master" | awk '{ print $1 }'>$clusterName.csv
+
 

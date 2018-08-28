@@ -13,7 +13,7 @@ kubectl apply -n $tenant -f $working_dir/jmeter_master_deploy.yaml
 
 sleep 15
 
-kubectl get po -n $tenant | grep jmeter-master | awk '{print $1}'
+kubectl get po -n $tenant -o wide | grep jmeter-master
 
 master_pod=`kubectl get po -n $tenant | grep jmeter-master | awk '{print $1}'`
 

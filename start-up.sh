@@ -60,7 +60,7 @@ fi
 
 done
 
-paste mapper.csv trial-master.csv trial-slave1.csv trial-slave2.csv trial-slave3.csv trial-slave4.csv -d ',' > info.csv
+paste mapper.csv master.csv slave1.csv slave2.csv slave3.csv slave4.csv slave5.csv -d ',' > info.csv
 #	paste mapper.csv trial-master.csv trial-slave1.csv trial-slave2.csv  credentials.csv -d ',' > info.csv
 
 jmxList=`cat info.csv`
@@ -78,8 +78,8 @@ do
 	slavePodIP3=`echo $i | awk -F ',' '{ print $6 }' | cut -d ':' -f2`
 	slavePodName4=`echo $i | awk -F ',' '{ print $7 }' | cut -d ':' -f1`
 	slavePodIP4=`echo $i | awk -F ',' '{ print $7 }' | cut -d ':' -f2`
-#	slavePodName5=`echo $i | awk -F ',' '{ print $8 }' | cut -d ':' -f1`
-#	slavePodIP5=`echo $i | awk -F ',' '{ print $8 }' | cut -d ':' -f2`
+	slavePodName5=`echo $i | awk -F ',' '{ print $8 }' | cut -d ':' -f1`
+	slavePodIP5=`echo $i | awk -F ',' '{ print $8 }' | cut -d ':' -f2`
 #	clusterName=`echo $i | awk -F ',' '{ print $6 }'`
 #	zoneName=`echo $i | awk -F ',' '{ print $7 }'`
 	kubectl cp $jmxFileName -n $tenant $masterPodName:/$jmxFileName
@@ -91,39 +91,44 @@ do
 #		bash slave.sh trial-slave4 us-west2-a $tenant $slavePodName4 $csvFileName 
 #		bash slave.sh trial-slave5 us-central1-c $tenant $slavePodName5 $csvFileName 
 
-		clusterName=trial-slave1
-                zoneName=us-east1-b
+		clusterName=slave1
+                zoneName=us-central1-a	
 		gcloud container clusters get-credentials $clusterName --zone $zoneName --project etsyperftesting-208619
 		kubectl exec -ti -n $tenant $slavePodName1 -- mkdir -p /jmeter/apache-jmeter-4.0/bin/csv/
 		kubectl cp $csvFileName -n $tenant $slavePodName1:/jmeter/apache-jmeter-4.0/bin/csv/$csvFileName
                 kubectl exec -it -n $tenant $slavePodName1 -- bash -c "echo 35.227.203.198 www.etsy.com etsy.com openapi.etsy.com api.etsy.com >> /etc/hosts"
-		clusterName=trial-slave2
-                zoneName=us-west1-a
+		clusterName=slave2
+                zoneName=us-east1-b
 		gcloud container clusters get-credentials $clusterName --zone $zoneName --project etsyperftesting-208619
 		kubectl exec -ti -n $tenant $slavePodName2 -- mkdir -p /jmeter/apache-jmeter-4.0/bin/csv/
 		kubectl cp $csvFileName -n $tenant $slavePodName2:/jmeter/apache-jmeter-4.0/bin/csv/$csvFileName
                 kubectl exec -it -n $tenant $slavePodName2 -- bash -c "echo 35.227.203.198 www.etsy.com etsy.com openapi.etsy.com api.etsy.com >> /etc/hosts"
-        	clusterName=trial-slave3
-                zoneName=us-east4-b
+        	clusterName=slave3
+                zoneName=us-east4-a
 		gcloud container clusters get-credentials $clusterName --zone $zoneName --project etsyperftesting-208619
 		kubectl exec -ti -n $tenant $slavePodName3 -- mkdir -p /jmeter/apache-jmeter-4.0/bin/csv/
 		kubectl cp $csvFileName -n $tenant $slavePodName3:/jmeter/apache-jmeter-4.0/bin/csv/$csvFileName
                 kubectl exec -it -n $tenant $slavePodName3 -- bash -c "echo 35.227.203.198 www.etsy.com etsy.com openapi.etsy.com api.etsy.com >> /etc/hosts"
-		clusterName=trial-slave4
-                zoneName=us-west2-a
+		clusterName=slave4
+                zoneName=us-west1-a
           	gcloud container clusters get-credentials $clusterName --zone $zoneName --project etsyperftesting-208619
 		kubectl exec -ti -n $tenant $slavePodName4 -- mkdir -p /jmeter/apache-jmeter-4.0/bin/csv/
 		kubectl cp $csvFileName -n $tenant $slavePodName4:/jmeter/apache-jmeter-4.0/bin/csv/$csvFileName
                 kubectl exec -it -n $tenant $slavePodName4 -- bash -c "echo 35.227.203.198 www.etsy.com etsy.com openapi.etsy.com api.etsy.com >> /etc/hosts"
+		clusterName=slave5
+                zoneName=us-central1-c	
+          	gcloud container clusters get-credentials $clusterName --zone $zoneName --project etsyperftesting-208619
+		kubectl exec -ti -n $tenant $slavePodName5 -- mkdir -p /jmeter/apache-jmeter-4.0/bin/csv/
+		kubectl cp $csvFileName -n $tenant $slavePodName5:/jmeter/apache-jmeter-4.0/bin/csv/$csvFileName
+                kubectl exec -it -n $tenant $slavePodName5 -- bash -c "echo 35.227.203.198 www.etsy.com etsy.com openapi.etsy.com api.etsy.com >> /etc/hosts"
 		fi
 
-		clusterName=trial-master
-		zoneName=us-central1-a
-		gcloud container clusters get-credentials $clusterName --zone $zoneName --project etsyperftesting-208619
-		kubectl exec -it -n $tenant $masterPodName -- /jmeter/load_test $jmxFileName $slavePodIP1 $slavePodIP2 $slavePodIP3 $slavePodIP4 &
-#		kubectl exec -it -n $tenant $masterPodName -- /jmeter/load_test $jmxFileName $slavePodIP1 $slavePodIP2 &
-
-	done
+clusterName=`gcloud container clusters list | grep master | awk '{ print $1 }'`
+zoneName=`gcloud container clusters list | grep master | awk '{ print $2 }'`
+gcloud container clusters get-credentials $clusterName --zone $zoneName --project etsyperftesting-208619
+kubectl exec -it -n $tenant $masterPodName -- /jmeter/load_test $jmxFileName $slavePodIP1 $slavePodIP2 $slavePodIP3 $slavePodIP4 $slavePodIP5 &
+#kubectl exec -it -n $tenant $masterPodName -- /jmeter/load_test $jmxFileName $slavePodIP1 $slavePodIP2 &
+done
 
 
 

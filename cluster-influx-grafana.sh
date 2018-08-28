@@ -73,7 +73,7 @@ kubectl create -n $tenant -f $working_dir/jmeter_grafana_svc.yaml
 
 echo namespace = $tenant > $working_dir/tenant_export
 
-sleep 10
+sleep 15
 
 ## Create jmeter database automatically in Influxdb
 
