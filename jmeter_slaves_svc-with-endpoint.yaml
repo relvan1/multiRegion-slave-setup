@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jmeter-slaves-svc
+spec:
+  ports:
+    - port: 1099
+      name: first
+      targetPort: 1099
+    - port: 50000
+      name: second
+      targetPort: 50000
+
+
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: jmeter-slaves-svc
+subsets:
+- addresses:
+  - ip: 35.203.150.52 
+  ports:
+  - port: 1099
+    name: first
+  - port: 50000
+    name: second
